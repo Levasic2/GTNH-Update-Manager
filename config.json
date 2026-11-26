@@ -1,6 +1,8 @@
 {
-  "modpack_zip": "C:\\Users\\Mishanya\\OneDrive\\\u0420\u043e\u0431\u043e\u0447\u0438\u0439 \u0441\u0442\u0456\u043b\\\u0414\u0430\u0442\u0430\u0431\u0430\u0437\u0430 \u041b\u0435\u0432\u0430\u0441\u0430\\Games\\Minecraft\\modpacks\\GTNH_2.9.2.zip",
-  "instance_old": "C:\\Users\\Mishanya\\AppData\\Roaming\\PrismLauncher\\instances\\GT_New_Horizons_2.9.0_Java_17-26",
+  "modpack_zip": null,
+  "instance_old": null,
+  "addons_path": null,
+  "resourcepacks_path": null,
   "migrateOptional": true,
   "addAddons": true,
   "migrateAddons": true,

@@ -7,6 +7,8 @@ print("Config path:", CONFIG)
 
 modpack_zip = None
 instance_old = None
+addons_path = None
+resourcepacks_path = None
 
 migrateOptional = None
 addAddons = None
@@ -21,8 +23,16 @@ def init_vars():
     migrateAddons = tk.BooleanVar(value=False)
     addResourcePacks = tk.BooleanVar(value=False)
 
+
+def _to_path(value):
+    if not value:
+        return None
+    path = Path(value)
+    return path if path.exists() else None
+
+
 def load():
-    global modpack_zip, instance_old
+    global modpack_zip, instance_old, addons_path, resourcepacks_path
     if not CONFIG.exists():
         return
     try:
@@ -31,10 +41,10 @@ def load():
         print("WARN | config.json is empty or corrupted, ignoring it")
         return
 
-    zip_path = Path(data["modpack_zip"]) if data.get("modpack_zip") else None
-    inst_path = Path(data["instance_old"]) if data.get("instance_old") else None
-    modpack_zip = zip_path if zip_path and zip_path.exists() else None
-    instance_old = inst_path if inst_path and inst_path.exists() else None
+    modpack_zip = _to_path(data.get("modpack_zip"))
+    instance_old = _to_path(data.get("instance_old"))
+    addons_path = _to_path(data.get("addons_path"))
+    resourcepacks_path = _to_path(data.get("resourcepacks_path"))
 
     migrateOptional.set(bool(data.get("migrateOptional", False)))
     addAddons.set(bool(data.get("addAddons", False)))
@@ -46,6 +56,8 @@ def save():
     CONFIG.write_text(json.dumps({
         "modpack_zip": str(modpack_zip) if modpack_zip else None,
         "instance_old": str(instance_old) if instance_old else None,
+        "addons_path": str(addons_path) if addons_path else None,
+        "resourcepacks_path": str(resourcepacks_path) if resourcepacks_path else None,
         "migrateOptional": migrateOptional.get(),
         "addAddons": addAddons.get(),
         "migrateAddons": migrateAddons.get(),

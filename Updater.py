@@ -10,12 +10,6 @@ import state
 AppData = Path(str(os.getenv("APPDATA")))
 print("AppData located:", AppData.exists())
 instances = AppData/"PrismLauncher"/"instances"
-Addons = Path(
-    r"C:\Users\Mishanya\OneDrive\Робочий стіл\Датабаза Леваса\Games\Minecraft\mods\GTNH Addons"
-)
-ResourcePacks = Path(
-    r"C:\Users\Mishanya\OneDrive\Робочий стіл\Датабаза Леваса\Games\Minecraft\resourcepacks\GTNH"
-)
 
 # Functions
 def migrate(mig):
@@ -57,6 +51,20 @@ def pick_instance():
         state.instance_old = Path(path)
         print("Instance State:", state.instance_old)
 
+def pick_addons():
+    path = filedialog.askdirectory(title="Select Addons folder")
+    if path:
+        state.addons_path = Path(path)
+        state.save()
+        print("Addons State:", state.addons_path)
+
+def pick_resourcepacks():
+    path = filedialog.askdirectory(title="Select Resource Packs folder")
+    if path:
+        state.resourcepacks_path = Path(path)
+        state.save()
+        print("ResourcePacks State:", state.resourcepacks_path)
+
 def close_window():
     state.save()
     root.destroy()
@@ -68,6 +76,8 @@ state.load()
 
 tk.Button(root, text="Pick zip", command=pick_zip).pack()
 tk.Button(root, text="Pick Instance", command=pick_instance).pack()
+tk.Button(root, text="Pick Addons", command=pick_addons).pack()
+tk.Button(root, text="Pick Resource Packs", command=pick_resourcepacks).pack()
 
 tk.Checkbutton(root, text="Migrate optional files", variable=state.migrateOptional).pack()
 tk.Checkbutton(root, text="Add addons", variable=state.addAddons).pack()
@@ -132,36 +142,35 @@ Migration_Addons = [
     "wayfarmap"
 ]
 
-Addons_List = []
-for jar in Addons.glob("*.jar"):
-    Addons_List.append(jar.name)
-
-ResourcePacks_List = []
-for z in ResourcePacks.glob("*.zip"):
-    ResourcePacks_List.append(z.name)
-
 print("\nMigration | Migrating Main Files")
 migrate(Migration_List)
+
 if state.migrateOptional.get():
     print("Migration | Migrating Optional Files")
     migrate(Migration_Optional)
 
 if state.addAddons.get():
-    print("Migration | Adding Addons")
-    for jar in Addons_List:
-        source = Addons/jar
-        destination = instances/root_folder/".minecraft"/"mods"/jar
-        shutil.copy2(source, destination)
+    if not state.addons_path:
+        print("WARN | Addons folder not selected, skipping addons")
+    else:
+        print("Migration | Adding Addons")
+        for jar in state.addons_path.glob("*.jar"):
+            destination = instances/root_folder/".minecraft"/"mods"/jar.name
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(jar, destination)
 
-    if state.migrateAddons.get():
-        print("Migration | Migrating Addons")
-        migrate(Migration_Addons)
+        if state.migrateAddons.get():
+            print("Migration | Migrating Addons")
+            migrate(Migration_Addons)
 
 if state.addResourcePacks.get():
-    print("Migration | Migrating Resource Packs")
-    for z in ResourcePacks_List:
-        source = ResourcePacks / z
-        destination = instances / root_folder / ".minecraft" / "resourcepacks" / z
-        shutil.copy2(source, destination)
+    if not state.resourcepacks_path:
+        print("WARN | Resource Packs folder not selected, skipping resource packs")
+    else:
+        print("Migration | Adding Resource Packs")
+        for pack in state.resourcepacks_path.glob("*.zip"):
+            destination = instances/root_folder/".minecraft"/"resourcepacks"/pack.name
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(pack, destination)
 
 print("Migration | Migration Finished")
