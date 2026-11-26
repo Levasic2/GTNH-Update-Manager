@@ -3,8 +3,8 @@
   "instance_old": null,
   "addons_path": null,
   "resourcepacks_path": null,
-  "migrateOptional": true,
-  "addAddons": true,
-  "migrateAddons": true,
-  "addResourcePacks": true
+  "migrateOptional": false,
+  "addAddons": false,
+  "migrateAddons": false,
+  "addResourcePacks": false
 }
